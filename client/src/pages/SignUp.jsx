@@ -24,7 +24,7 @@ export default function SignUp() {
       });
 
       const data = await res.json();
-      console.log(data);
+      // console.log(data);
       setLoading(false);
 
       if (data.success === false) {
