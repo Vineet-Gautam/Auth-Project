@@ -26,8 +26,8 @@ export default function SignUp() {
       const data = await res.json();
       console.log(data);
       setLoading(false);
-      
-      if(!data.success) {
+
+      if (data.success === false) {
         setError(true);
         return;
       }
@@ -65,7 +65,10 @@ export default function SignUp() {
           onChange={handleInput}
         />
 
-        <button disabled={loading ? true : false}className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled: opacity-80">
+        <button
+          disabled={loading ? true : false}
+          className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled: opacity-80"
+        >
           {loading ? "loading..." : "Sign Up"}
         </button>
       </form>
