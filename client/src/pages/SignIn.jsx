@@ -1,11 +1,18 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from "../redux/user/userSlice";
+import { useSelector, useDispatch } from "react-redux";
+
 export default function SignIn() {
   const [formData, setFormData] = useState({});
 
-  const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { loading, error } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleInput = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -15,7 +22,7 @@ export default function SignIn() {
     e.preventDefault();
 
     try {
-      setLoading(true);
+      dispatch(signInStart());
       const res = await fetch("/api/auth/signin", {
         method: "POST",
         headers: {
@@ -26,17 +33,16 @@ export default function SignIn() {
 
       const data = await res.json();
       // console.log(data);
-      setLoading(false);
 
       if (data.success === false) {
-        setError(true);
+        dispatch(signInFailure(data));
         return;
       }
-      setError(false);
+
+      dispatch(signInSuccess(data));
       navigate("/");
     } catch (err) {
-      setLoading(false);
-      setError(true);
+      dispatch(signInFailure(error));
     }
     // console.log(data);
   };
@@ -68,8 +74,8 @@ export default function SignIn() {
         />
 
         <button
-          disabled={loading ? true : false}
-          className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled: opacity-80"
+          disabled={loading}
+          className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
         >
           {loading ? "loading..." : "Sign In"}
         </button>
@@ -81,7 +87,9 @@ export default function SignIn() {
           <span className="text-blue-500">Sign up</span>
         </Link>
       </div>
-      <p className="text-red-700 mt-5">{error && "Something went wrong"}</p>
+      <p className="text-red-700 mt-5">
+        {error ? error.message || "Something went wrong" : ""}
+      </p>
     </div>
   );
 }
